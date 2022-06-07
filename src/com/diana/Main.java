@@ -1,12 +1,7 @@
 package com.diana;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
@@ -20,6 +15,7 @@ public class Main {
         double totalDiversos = 0;
         double totalSinInterv = 0;
         double totalServVarios = 0;
+        double totalTodas = 0;
 
         HashMap<Double, String> mayorMenorIncidencias = new HashMap<Double, String>();
 
@@ -34,24 +30,34 @@ public class Main {
                 File[] contenidoCarpeta = carpetaBomberos.listFiles();
                 for (File i : contenidoCarpeta) {
 
-                    FileReader fr = new FileReader(i);
-                    BufferedReader bf = new BufferedReader(fr);
+                    FileInputStream fis = new FileInputStream(i);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                    String line = null;
+                    int count = 0;
 
-                    String linea;
-//                    Scanner myReader = new Scanner(i);
-                    while ((linea = bf.readLine()) != null) {
-                        String data = linea;
-                        String parte[] = data.split(";");//dividimos cada linea en partes separadas por ;
-                        totalFuego += Double.parseDouble(parte[3]);
-                        totalConstr += Double.parseDouble(parte[4]);
-                        totalSalva += Double.parseDouble(parte[5]);
-                        totalAgua += Double.parseDouble(parte[6]);
-                        totalDiversos += Double.parseDouble(parte[7]);
-                        totalSinInterv += Double.parseDouble(parte[8]);
-                        totalServVarios += Double.parseDouble(parte[9]);
+
+                    while ((line = br.readLine()) != null) { // read through file line by line
+                        if (count != 0) { // count == 0 means the first line
+                            String data = line;
+                            String parte[] = data.split(";");//dividimos cada linea en partes separadas por ;
+                            //sumamos todos los campos de cada columna
+                            //menos la primera fila (nombres)
+                            totalFuego += Double.parseDouble(parte[3]);
+                            totalConstr += Double.parseDouble(parte[4]);
+                            totalSalva += Double.parseDouble(parte[5]);
+                            totalAgua += Double.parseDouble(parte[6]);
+                            totalDiversos += Double.parseDouble(parte[7]);
+                            totalSinInterv += Double.parseDouble(parte[8]);
+                            totalServVarios += Double.parseDouble(parte[9]);
+                            totalTodas += Double.parseDouble(parte[10]);
+                        }
+                        count++; // count increments as you read lines
                     }
-                    bf.close();
+                    br.close(); // do not forget to close the resources
                 }
+                //Calculamos la media de incidencias por ano: TOTAL / nr de anos(de archivos que hay en la carpeta)
+                double mediaAnos = totalTodas / carpetaBomberos.list().length;
+
                 // Anadir claves y valor al HashMap (tipoIncidencia, numeroTotal)
                 mayorMenorIncidencias.put(totalFuego, "fuego");
                 mayorMenorIncidencias.put(totalConstr, "danoConstr");
@@ -66,10 +72,22 @@ public class Main {
                 //ordenamos los valores de menor a mayor
                 Collections.sort(claves);
 
+                // Imprimimos el Hashmap entero
+                System.out.println("####################   HASHMAP   #####################");
+                for (Double i : mayorMenorIncidencias.keySet()) {
+                    System.out.println("key: " + i + " value: " + mayorMenorIncidencias.get(i));
+                }
+
+                System.out.println("#######################################################");
+
                 //sacamos la temparatura minima (la primera posicion)
-                mayorMenorIncidencias.get(claves.get(0));
+                System.out.println("Intervencion con menos salidas: " + mayorMenorIncidencias.get(claves.get(0)) + " , numero de salidas: " + claves.get(0));
                 //sacamos la temparatura maxima (ultima posicion)
-                mayorMenorIncidencias.get(claves.get(claves.size() - 1));
+                System.out.println("Intervencion con mas salidas: " + mayorMenorIncidencias.get(claves.get(claves.size() - 1)) + " , numero de salidas: " + claves.get(claves.size() - 1));
+                //Imprimimos la media de incidencia por ano
+                System.out.println("Media incidencia por ano: " + mediaAnos);
+                //Imprimimos la media de incidencia por mes
+                System.out.println("Media incidencia por mes: " );
             }
 
         } catch (Exception ex) {//manejamos excepciones
