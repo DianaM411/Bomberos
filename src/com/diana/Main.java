@@ -17,7 +17,11 @@ public class Main {
         double totalServVarios = 0;
         double totalTodas = 0;
 
+        double totalMes = 0;
+
         HashMap<Double, String> mayorMenorIncidencias = new HashMap<Double, String>();
+        ArrayList<String> meses = new ArrayList<String>();
+        Collections.addAll(meses, "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiempbre", "noviembre", "diciembre");
 
         try {
             //la carpeta Bomberos
@@ -38,7 +42,8 @@ public class Main {
 
                     while ((line = br.readLine()) != null) { // read through file line by line
                         if (count != 0) { // count == 0 means the first line
-                            String data = line;
+                            String data = line.toLowerCase();// convert to lower case
+
                             String parte[] = data.split(";");//dividimos cada linea en partes separadas por ;
                             //sumamos todos los campos de cada columna
                             //menos la primera fila (nombres)
@@ -50,13 +55,20 @@ public class Main {
                             totalSinInterv += Double.parseDouble(parte[8]);
                             totalServVarios += Double.parseDouble(parte[9]);
                             totalTodas += Double.parseDouble(parte[10]);
+
+
+                            //sumamos el total de incidencias de cada mes
+                            for (String m : meses) {
+                                while(parte[1].equals(m)){
+                                    totalMes += Double.parseDouble(parte[10]);
+                                    //?????
+                                }
+                            }
                         }
                         count++; // count increments as you read lines
                     }
                     br.close(); // do not forget to close the resources
                 }
-                //Calculamos la media de incidencias por ano: TOTAL / nr de anos(de archivos que hay en la carpeta)
-                double mediaAnos = totalTodas / carpetaBomberos.list().length;
 
                 // Anadir claves y valor al HashMap (tipoIncidencia, numeroTotal)
                 mayorMenorIncidencias.put(totalFuego, "fuego");
@@ -71,6 +83,13 @@ public class Main {
                 claves.addAll(mayorMenorIncidencias.keySet());
                 //ordenamos los valores de menor a mayor
                 Collections.sort(claves);
+
+                //Calculamos la media de incidencias por ano: TOTAL / nr de anos(de archivos que hay en la carpeta)
+                double mediaAnos = totalTodas / carpetaBomberos.list().length;
+
+                //Calculamos la media de incidencias por mes
+                //Como?????
+                // while nombre del mes es X sumame todos los campos de cada fila de la culumna 10 (Total)
 
                 // Imprimimos el Hashmap entero
                 System.out.println("####################   HASHMAP   #####################");
